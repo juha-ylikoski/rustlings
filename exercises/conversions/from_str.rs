@@ -11,7 +11,6 @@ struct Person {
     age: usize,
 }
 
-// I AM NOT DONE
 
 // Steps:
 // 1. If the length of the provided string is 0, an error should be returned
@@ -23,9 +22,37 @@ struct Person {
 // 6. If while extracting the name and the age something goes wrong, an error should be returned
 // If everything goes well, then return a Result of a Person object
 
+
+use std::fmt;
+
+#[derive(Debug, Clone)]
+struct EmptyContainer;
+impl fmt::Display for EmptyContainer {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Container empty")
+    }
+}
+impl error::Error for EmptyContainer {}
+
+
 impl FromStr for Person {
     type Err = Box<dyn error::Error>;
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        let s: Vec<&str> = s.split(",").collect();
+        if s.len() != 2 {
+            return Err(EmptyContainer.into())
+        }
+        let name = s[0].to_string();
+        if name.len() == 0 {
+            return Err(EmptyContainer.into())
+        }
+        let age = s[1].parse::<usize>()?;
+        Ok(Person {
+            name,
+            age
+        })
+
+
     }
 }
 
